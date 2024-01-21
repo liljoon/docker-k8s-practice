@@ -1,0 +1,45 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  selector: # Service는 matchLabels이 없음.
+    app: second-app
+    tier: backend
+  ports:
+    - protocol: "TCP"
+      port: 80
+      targetPort: 8080
+    # - protocol: 'TCP' # 여러개 노출 가능.
+    #   port: 443
+    #   targetPort: 443
+  type: LoadBalancer # ClusterIP - default 내부적으로 노출, NodePort - 클러스터 내부에서 액세스 가능, 외부는 LoadBalancer
+---
+apiVersion: apps/v1 # version 설정
+kind: Deployment # Deployment, Service, Job 등 지정
+metadata:
+  name: second-app-deployment # 이름 지정
+spec: # 여기가 핵심. pod 사양을 설정
+  replicas: 1 # 동일한 pod 개수 설정, 기본은 1, 0으로 설정해서 처음에 시작안하게 할 수도 있음.
+  selector: # 관리할 pod를 매칭해줌.
+    matchLabels:
+      app: second-app
+      tier: backend
+  template: #pod에 대한 설정
+    metadata: #pod에 대한 metadata
+      labels: #key-value로 원하는 거 설정가능
+        app: second-app
+        tier: backend
+    spec: # pod에 대한 spec
+      containers:
+        - name: second-node # 컨테이너 이름 지정
+          image: liljoon/kub-first-app:2 # 이미지 지정
+          imagePullPolicy: "Always"
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 8080
+            periodSeconds: 3
+            initialDelaySeconds: 5
+        # - name: second-node # 이런 식으로 여러개 실행 가능.
+        #   image:

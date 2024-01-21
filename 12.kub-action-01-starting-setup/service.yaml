@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+spec:
+  selector: # Service는 matchLabels이 없음.
+    app: second-app
+    tier: backend
+  ports:
+    - protocol: "TCP"
+      port: 80
+      targetPort: 8080
+    # - protocol: 'TCP' # 여러개 노출 가능.
+    #   port: 443
+    #   targetPort: 443
+  type: LoadBalancer # ClusterIP - default 내부적으로 노출, NodePort - 클러스터 내부에서 액세스 가능, 외부는 LoadBalancer
