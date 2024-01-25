@@ -1,0 +1,16 @@
+apiVersion: v1
+kind: PersistentVolume
+metadata:
+  name: host-pv
+spec:
+  capacity: # 최대 용량 지정
+    storage: 1Gi
+  volumeMode: Filesystem # Filesystem or Block
+  storageClassName: standard
+  accessModes:
+    - ReadWriteOnce # single node
+    # - ReadOnlyMany # 여러 노드, 읽기전용 , hostPath에서는 사용 불가
+    # - ReadWriteMany # 여러노드, 읽기쓰기, hostPath에서는 사용 불가
+  hostPath:
+    path: /data
+    type: DirectoryOrCreate
